@@ -58,6 +58,12 @@ h1{font-size:26px;line-height:1.2;font-weight:700}
 .frames img+img{animation:swap 2.4s ease-in-out infinite}
 @keyframes swap{0%,40%{opacity:0}55%,90%{opacity:1}100%{opacity:0}}
 .wlist{padding-left:20px;margin:8px 0;color:var(--sub)}
+.vid{display:flex;align-items:center;gap:12px;width:100%;text-align:left;margin-top:16px;padding:8px;border-radius:16px;background:var(--surface);transition:opacity .15s}
+.vid:active{opacity:.7}
+.vid .vt{position:relative;width:96px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:var(--line);flex:none;color:#fff}
+.vid .vt img{width:100%;height:100%;object-fit:cover;display:block}
+.vid .vt span{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.35)}
+.vid .nm{display:block;font-weight:600}
 .hint{background:var(--surface);border-radius:16px;padding:12px 16px;margin:16px 0;font-size:15px}
 .hint b{color:var(--accent-text)}
 .sets{display:grid;gap:8px;margin-bottom:16px}
@@ -137,16 +143,16 @@ const $ = s => document.querySelector(s);
 
 /* ---------- данные программы ---------- */
 const EX = {
-  legpress: {n:'Жим ногами',            g:'Ноги',   img:'Leg_Press',              sets:3, r:[10,12], step:5,   note:'В тренажёре (Leg Press). Не нагружает спину, даёт отличную базу ногам.'},
-  dbpress:  {n:'Жим гантелей лёжа',     g:'Грудь',  img:'Dumbbell_Bench_Press',   sets:3, r:[8,10],  step:2,   note:'На горизонтальной скамье. Работают грудь и трицепс.'},
-  pulldown: {n:'Тяга верхнего блока',   g:'Спина',  img:'Wide-Grip_Lat_Pulldown', sets:3, r:[10,12], step:2.5, note:'К груди (Lat Pulldown). Формирует широкую спину.'},
-  shoulder: {n:'Жим гантелей сидя',     g:'Плечи',  img:'Dumbbell_Shoulder_Press',sets:3, r:[10,10], step:2,   note:'Вверх (Shoulder Press). Качает плечи.'},
-  abs:      {n:'Скручивания',           g:'Пресс',  img:'Crunches',               sets:3, r:[15,20], step:1,   note:'Любые скручивания на пресс. Вес — только если добавляешь отягощение.'},
-  legcurl:  {n:'Сгибания ног',          g:'Ноги',   img:'Seated_Leg_Curl',        sets:3, r:[12,12], step:2.5, note:'Сидя или лёжа (Leg Curls). Задняя поверхность бедра.'},
-  incline:  {n:'Жим на наклонной',      g:'Грудь',  img:'Incline_Dumbbell_Press', sets:3, r:[8,10],  step:2,   note:'Гантели или штанга (Incline Press). Верхняя часть груди.'},
-  row:      {n:'Тяга нижнего блока',    g:'Спина',  img:'Seated_Cable_Rows',      sets:3, r:[10,12], step:2.5, note:'К поясу сидя (Seated Cable Row). Толщина спины и осанка.'},
-  lateral:  {n:'Махи гантелями в стороны', g:'Плечи', img:'Side_Lateral_Raise',   sets:3, r:[12,15], step:1,   note:'Стоя (Lateral Raises). Делает плечи визуально шире.'},
-  biceps:   {n:'Подъём на бицепс',      g:'Бицепс', img:'Dumbbell_Bicep_Curl',    sets:3, r:[10,12], step:1,   note:'Гантели или штанга.'},
+  legpress: {n:'Жим ногами',            g:'Ноги',   img:'Leg_Press', v:['tjLlHGjfvTk','ТВОЙ ТРЕНЕР · 6:37'],              sets:3, r:[10,12], step:5,   note:'В тренажёре (Leg Press). Не нагружает спину, даёт отличную базу ногам.'},
+  dbpress:  {n:'Жим гантелей лёжа',     g:'Грудь',  img:'Dumbbell_Bench_Press', v:['EDEYzHWbn8c','Михаил Смалько · 1:42'],   sets:3, r:[8,10],  step:2,   note:'На горизонтальной скамье. Работают грудь и трицепс.'},
+  pulldown: {n:'Тяга верхнего блока',   g:'Спина',  img:'Wide-Grip_Lat_Pulldown', v:['GTs3xqB_ZgQ','Ilya Generalov · 1:16'], sets:3, r:[10,12], step:2.5, note:'К груди (Lat Pulldown). Формирует широкую спину.'},
+  shoulder: {n:'Жим гантелей сидя',     g:'Плечи',  img:'Dumbbell_Shoulder_Press', v:['gVoVKUmyXVQ','Geography Fitness · 1:27'],sets:3, r:[10,10], step:2,   note:'Вверх (Shoulder Press). Качает плечи.'},
+  abs:      {n:'Скручивания',           g:'Пресс',  img:'Crunches', v:['H8xSHCAjM-I','Олександр Попенко · 0:57'],               sets:3, r:[15,20], step:1,   note:'Любые скручивания на пресс. Вес — только если добавляешь отягощение.'},
+  legcurl:  {n:'Сгибания ног',          g:'Ноги',   img:'Seated_Leg_Curl', v:['Isqja-cbAmI','Daniil Fitness · 2:55'],        sets:3, r:[12,12], step:2.5, note:'Сидя или лёжа (Leg Curls). Задняя поверхность бедра.'},
+  incline:  {n:'Жим на наклонной',      g:'Грудь',  img:'Incline_Dumbbell_Press', v:['drTzH4ywDDw','Make Fitness · 1:03'], sets:3, r:[8,10],  step:2,   note:'Гантели или штанга (Incline Press). Верхняя часть груди.'},
+  row:      {n:'Тяга нижнего блока',    g:'Спина',  img:'Seated_Cable_Rows', v:['hUV6XDtNTLU','Ilya Generalov · 0:53'],      sets:3, r:[10,12], step:2.5, note:'К поясу сидя (Seated Cable Row). Толщина спины и осанка.'},
+  lateral:  {n:'Махи гантелями в стороны', g:'Плечи', img:'Side_Lateral_Raise', v:['Q3j7XYxrJtk','Ilya Generalov · 0:45'],   sets:3, r:[12,15], step:1,   note:'Стоя (Lateral Raises). Делает плечи визуально шире.'},
+  biceps:   {n:'Подъём на бицепс',      g:'Бицепс', img:'Dumbbell_Bicep_Curl', v:['gi3lslo1hoI','Make Fitness · 1:20'],    sets:3, r:[10,12], step:1,   note:'Гантели или штанга.'},
 };
 const DAYS = {
   A: {title:'Понедельник', ex:['legpress','dbpress','pulldown','shoulder','abs']},
@@ -212,6 +218,7 @@ const ic = {
   minus: svg('<path d="M5 12h14"/>'),
   plus: svg('<path d="M12 5v14M5 12h14"/>'),
   dumb: svg('<path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/>'),
+  play: svg('<path d="m8 5 11 7-11 7z"/>'),
   timer: svg('<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/>'),
   chart: svg('<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>'),
 };
@@ -407,6 +414,8 @@ V.ex = ({day, id}) => {
     <h1>${e.n}</h1>
     <div class="sub">${e.sets} × ${rng(e)} повторений · ${e.g}</div>
     <p class="sub" style="margin-top:4px">${e.note}</p>
+    <button class="vid" data-a="video" data-id="${id}"><span class="vt"><img src="https://i.ytimg.com/vi/${e.v[0]}/mqdefault.jpg" alt="" loading="lazy"><span>${ic.play}</span></span>
+      <span class="grow"><span class="nm">Видео: правильная техника</span><span class="sub">${e.v[1]}</span></span>${ic.right}</button>
     <div class="hint">${hint}</div>
     <div class="sets">${sets}</div>
     <div class="steps">${stepper('w', e.g === 'Пресс' ? 'Доп. вес, кг' : 'Вес, кг', ui.cur.w)}${stepper('r', 'Повторы', ui.cur.r)}</div>
@@ -475,6 +484,10 @@ const ACT = {
   back,
   day: d => go('workout', {day: d.day}),
   ex: d => openEx(d.day, d.id),
+  video: d => {
+    const url = 'https://www.youtube.com/watch?v=' + EX[d.id].v[0];
+    tg?.openLink ? tg.openLink(url) : window.open(url, '_blank', 'noopener');
+  },
   warm: d => go('warmup', {day: d.day}),
   startwarm: () => { startRest(300, 'Разминка'); render(true); },
   pref: d => { db.prefs.rest = +d.s; save('prefs', db.prefs); render(true); },
