@@ -17,8 +17,8 @@ const EX = {
   french:   {n:'Французский жим',       g:'Трицепс', img:'EZ-Bar_Skullcrusher', v:['PxSg9Iy98q0','Geography Fitness · 1:28'], sets:3, r:[10,12], step:2.5, note:'Лёжа, EZ-гриф или гантели. Локти смотрят в потолок и не разъезжаются. Работает трицепс.'},
 };
 const DAYS = {
-  A: {title:'Понедельник', ex:['legcurl','dbpress','pulldown','shoulder','french','abs']},
-  B: {title:'Пятница', ex:['legpress','incline','row','lateral','biceps','french','abs']},
+  A: {title:'Понедельник', ex:['legpress','dbpress','pulldown','shoulder','french','abs']},
+  B: {title:'Пятница', ex:['legcurl','incline','row','lateral','biceps','french','abs']},
 };
 const RESTS = [120,150,180];
 
