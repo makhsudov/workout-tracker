@@ -5,20 +5,20 @@ const $ = s => document.querySelector(s);
 /* ---------- данные программы ---------- */
 const EX = {
   legpress: {n:'Жим ногами',            g:'Ноги',   img:'Leg_Press', v:['tjLlHGjfvTk','ТВОЙ ТРЕНЕР · 6:37'],              sets:3, r:[10,12], step:5,   note:'В тренажёре (Leg Press). Не нагружает спину, даёт отличную базу ногам.'},
-  dbpress:  {n:'Жим гантелей лёжа',     g:'Грудь',  img:'Dumbbell_Bench_Press', v:['EDEYzHWbn8c','Михаил Смалько · 1:42'],   sets:3, r:[8,10],  step:2,   note:'На горизонтальной скамье. Работают грудь и трицепс.'},
+  dbpress:  {n:'Жим штанги лёжа',       g:'Грудь',  img:'Barbell_Bench_Press_-_Medium_Grip', v:['EDEYzHWbn8c','Михаил Смалько · 1:42'],   sets:3, r:[8,10],  step:2.5, note:'На горизонтальной скамье. Работают грудь и трицепс.'},
   pulldown: {n:'Тяга верхнего блока',   g:'Спина',  img:'Wide-Grip_Lat_Pulldown', v:['GTs3xqB_ZgQ','Ilya Generalov · 1:16'], sets:3, r:[10,12], step:2.5, note:'К груди (Lat Pulldown). Формирует широкую спину.'},
   shoulder: {n:'Жим гантелей сидя',     g:'Плечи',  img:'Dumbbell_Shoulder_Press', v:['gVoVKUmyXVQ','Geography Fitness · 1:27'],sets:3, r:[10,10], step:2,   note:'Вверх (Shoulder Press). Качает плечи.'},
   abs:      {n:'Скручивания',           g:'Пресс',  img:'Crunches', v:['H8xSHCAjM-I','Олександр Попенко · 0:57'],               sets:3, r:[15,20], step:1,   note:'Любые скручивания на пресс. Вес — только если добавляешь отягощение.'},
-  legcurl:  {n:'Румынская тяга с гантелями', g:'Ноги', img:'Stiff-Legged_Dumbbell_Deadlift', v:['w8618QnyZi8','Михаил Смалько · 1:28'], sets:3, r:[10,12], step:2, note:'Спина прямая, гантели скользят вдоль ног, таз уходит назад. Задняя поверхность бедра и ягодицы.'},
-  incline:  {n:'Жим на наклонной',      g:'Грудь',  img:'Incline_Dumbbell_Press', v:['drTzH4ywDDw','Make Fitness · 1:03'], sets:3, r:[8,10],  step:2,   note:'Гантели или штанга (Incline Press). Верхняя часть груди.'},
+  legcurl:  {n:'Румынская тяга со штангой', g:'Ноги', img:'Romanian_Deadlift', v:['w8618QnyZi8','Михаил Смалько · 1:28'], sets:3, r:[10,12], step:2.5, note:'Спина прямая, штанга скользит вдоль ног, таз уходит назад. Задняя поверхность бедра и ягодицы.'},
+  incline:  {n:'Жим штанги на наклонной', g:'Грудь', img:'Barbell_Incline_Bench_Press_-_Medium_Grip', v:['drTzH4ywDDw','Make Fitness · 1:03'], sets:3, r:[8,10],  step:2.5, note:'Скамья под небольшим углом (Incline Press). Верхняя часть груди.'},
   row:      {n:'Тяга гантели одной рукой', g:'Спина', img:'One-Arm_Dumbbell_Row', v:['mXh-Ogf3V4Y','IRON & WATER · 1:47'], sets:3, r:[10,12], step:2, note:'В наклоне с упором на скамью. Толщина спины и осанка. Подход = обе руки по очереди с одним весом.'},
   lateral:  {n:'Махи гантелями в стороны', g:'Плечи', img:'Side_Lateral_Raise', v:['Q3j7XYxrJtk','Ilya Generalov · 0:45'],   sets:3, r:[12,15], step:1,   note:'Стоя (Lateral Raises). Делает плечи визуально шире.'},
   biceps:   {n:'Подъём на бицепс',      g:'Бицепс', img:'Dumbbell_Bicep_Curl', v:['gi3lslo1hoI','Make Fitness · 1:20'],    sets:3, r:[10,12], step:1,   note:'Гантели или штанга.'},
   french:   {n:'Французский жим',       g:'Трицепс', img:'EZ-Bar_Skullcrusher', v:['PxSg9Iy98q0','Geography Fitness · 1:28'], sets:3, r:[10,12], step:2.5, note:'Лёжа, EZ-гриф или гантели. Локти смотрят в потолок и не разъезжаются. Работает трицепс.'},
 };
 const DAYS = {
-  A: {title:'Понедельник', ex:['legpress','dbpress','pulldown','shoulder','abs']},
-  B: {title:'Пятница', ex:['legcurl','incline','row','lateral','biceps','french']},
+  A: {title:'Понедельник', ex:['legcurl','dbpress','pulldown','shoulder','french','abs']},
+  B: {title:'Пятница', ex:['legpress','incline','row','lateral','biceps','french','abs']},
 };
 const RESTS = [120,150,180];
 
@@ -30,24 +30,36 @@ const lsSet = (k, v) => { try { v == null ? localStorage.removeItem('wt:' + k) :
 
 const db = {s: {}, w: {}, prefs: {rest: 150}};
 
+// CloudStorage принимает ключи только [A-Za-z0-9_-] до 16 символов, поэтому "s:2026-10-05:A" туда не пишется
+const toCloud = k => k.startsWith('s:') ? 's' + k.slice(2).replace(/-/g, '').replace(':', '')
+  : k.startsWith('weight:') ? 'w' + k.slice(7).replace(/-/g, '') : k;
+const fromCloud = k => {
+  let m;
+  if ((m = /^s(\d{4})(\d{2})(\d{2})([A-Z])$/.exec(k))) return `s:${m[1]}-${m[2]}-${m[3]}:${m[4]}`;
+  if ((m = /^w(\d{4})(\d{2})(\d{2})$/.exec(k))) return `weight:${m[1]}-${m[2]}-${m[3]}`;
+  return k === 'prefs' ? k : null;
+};
+
 async function load() {
-  let all = {};
+  const local = {}, remote = {};
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k.startsWith('wt:')) local[k.slice(3)] = localStorage.getItem(k);
+    }
+  } catch {}
   try {
     if (cloud) {
-      const keys = await call('getKeys');
-      for (let i = 0; i < keys.length; i += 40) Object.assign(all, await call('getItems', keys.slice(i, i + 40)));
-      for (const k in all) lsSet(k, all[k]);
+      const keys = await call('getKeys'), raw = {};
+      for (let i = 0; i < keys.length; i += 40) Object.assign(raw, await call('getItems', keys.slice(i, i + 40)));
+      for (const [k, v] of Object.entries(raw)) { const lk = fromCloud(k); if (lk && v) remote[lk] = v; }
     }
-  } catch { all = {}; }
-  if (!Object.keys(all).length) {
-    try {
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (k.startsWith('wt:')) all[k.slice(3)] = localStorage.getItem(k);
-      }
-    } catch {}
-  }
+  } catch {}
+  const all = {...local, ...remote};
   for (const [k, v] of Object.entries(all)) {
+    if (k === 'rest') continue;
+    if (cloud && remote[k] == null) call('setItem', toCloud(k), v).catch(() => {}); // дозаливаем локальное в облако
+    if (local[k] !== v) lsSet(k, v);
     try {
       if (k === 'prefs') Object.assign(db.prefs, JSON.parse(v));
       else if (k.startsWith('s:')) db.s[k] = JSON.parse(v);
@@ -59,7 +71,7 @@ async function load() {
 function save(k, v) {
   const s = v == null ? null : JSON.stringify(v);
   lsSet(k, s);
-  if (cloud) (s == null ? call('removeItem', k) : call('setItem', k, s)).catch(() => {});
+  if (cloud) (s == null ? call('removeItem', toCloud(k)) : call('setItem', toCloud(k), s)).catch(() => {});
 }
 
 /* ---------- утилиты ---------- */
@@ -193,7 +205,7 @@ const timerHtml = () => !rest ? '' : `
 /* ---------- навигация ---------- */
 let nav = [{v: 'home'}];
 const here = () => nav[nav.length - 1];
-const ui = {cur: {w: 0, r: 0}};
+const ui = {cur: {w: 0, r: 0}, cal: new Date(new Date().getFullYear(), new Date().getMonth(), 1)};
 const go = (v, p = {}) => { nav.push({v, ...p}); render(); };
 const back = () => { if (nav.length > 1) { nav.pop(); render(); } };
 const tab = v => { nav = [{v}]; render(); };
@@ -212,6 +224,21 @@ const backBtn = () => inTg ? '' : `<button class="icon back" data-a="back" aria-
 
 const V = {};
 
+function calendarHtml() {
+  const days = new Set(allSess().map(s => s.date)), t = today();
+  const y = ui.cal.getFullYear(), m = ui.cal.getMonth(), n = new Date(y, m + 1, 0).getDate(), off = (new Date(y, m, 1).getDay() + 6) % 7;
+  const cells = '<i></i>'.repeat(off) + Array.from({length: n}, (_, i) => {
+    const d = iso(new Date(y, m, i + 1));
+    return `<span class="cd ${days.has(d) ? 'on' : ''} ${d === t ? 'now' : ''}">${days.has(d) ? ic.check : i + 1}</span>`;
+  }).join('');
+  const cnt = [...days].filter(d => d.startsWith(iso(ui.cal).slice(0, 7))).length;
+  return `<div class="cal"><div class="ch">
+      <button class="icon" data-a="cal" data-d="-1" aria-label="Предыдущий месяц">${ic.left}</button>
+      <div class="grow"><b>${ui.cal.toLocaleDateString('ru-RU', {month: 'long', year: 'numeric'})}</b><span class="sub">Тренировок: ${cnt}</span></div>
+      <button class="icon" data-a="cal" data-d="1" aria-label="Следующий месяц">${ic.right}</button></div>
+    <div class="cg">${['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map(x => `<span class="cw">${x}</span>`).join('')}${cells}</div></div>`;
+}
+
 V.home = () => {
   const dow = new Date().getDay(), sug = dow === 1 ? 'A' : dow === 5 ? 'B' : null;
   const cards = Object.entries(DAYS).map(([k, d]) => {
@@ -222,12 +249,19 @@ V.home = () => {
         <span class="sub">${last ? 'Последняя: ' + fmtDate(last.date) : 'Ещё не было'}</span></span>
       ${ic.right}</button>`;
   }).join('');
-  return [`<div class="head"><div class="eyebrow">${fmtDate(today())}</div><h1>Тренировки</h1></div>${cards}
-    <details class="rules"><summary>Правила в зале</summary><ul>
-      <li>Разминка: 5 минут суставной гимнастики + 1–2 лёгких подхода перед первым упражнением.</li>
-      <li>Отдых между подходами 2–3 минуты, без спешки. Вся тренировка — 45–50 минут.</li>
-      <li>Прогрессия: возьми вес, с которым выходит 3×8. Каждую неделю добавляй по повторению. Когда все три подхода на максимуме — увеличь вес и начни заново.</li>
-    </ul></details>`, tabsHtml('home')];
+  return [`<div class="head"><div class="eyebrow">${fmtDate(today())}</div><h1>Тренировки</h1></div>${cards}${calendarHtml()}`, tabsHtml('home')];
+};
+
+V.done = ({day}) => {
+  const s = db.s[sessKey(today(), day)], sets = s ? Object.values(s.ex).flat() : [];
+  const vol = sets.reduce((a, [w, r]) => a + w * r, 0);
+  return [`<div class="donev"><div class="big">${ic.check}</div><h1>Готово!</h1>
+    <p class="sub" style="margin:4px 0 24px">${DAYS[day].title} · тренировка завершена</p>
+    <div class="stats"><div class="stat"><b>${Object.keys(s?.ex || {}).length}</b><span class="sub">упражнений</span></div>
+      <div class="stat"><b>${sets.length}</b><span class="sub">подходов</span></div>
+      <div class="stat"><b>${vol ? Math.round(vol) : '—'}</b><span class="sub">кг тоннаж</span></div></div>
+    <p class="sub">Отдыхай и ешь. Следующая тренировка — по плану.</p></div>`,
+    `<div class="bar"><button class="btn" data-a="tab" data-v="home">На главную</button></div>`];
 };
 
 V.workout = ({day}) => {
@@ -257,7 +291,7 @@ V.ex = ({day, id}) => {
   const e = EX[id], list = DAYS[day].ex, idx = list.indexOf(id), cur = todaySets(day, id);
   const p = plan(id, cur.length);
   const hint = !p.last
-    ? `Первый раз: подбери вес, с которым выйдет ${e.sets}×${e.r[0]}.`
+    ? `Первый раз: начни с лёгкого веса — после ${e.r[0]} повторов должно остаться 2–3 в запасе. Если легко, добавь вес в следующем подходе.`
     : `Прошлый раз: ${p.last.map(setTxt).join(' · ')}<br>${p.up
         ? `<b>Пора добавить вес: ${fmt(p.w)} кг × ${p.r}</b>`
         : `Цель: <b>${p.w ? fmt(p.w) + ' кг × ' : ''}${p.r} повт.</b>`}${ladderHtml(id, p.last)}`;
@@ -279,11 +313,9 @@ V.ex = ({day, id}) => {
     : `<div class="bar"><button class="btn" data-a="log">Записать подход ${cur.length + 1} из ${e.sets}</button></div>`;
   return [`${backBtn()}
     <div class="frames"><img src="img/${e.img}-0.jpg" alt="${e.n}: начало движения"><img src="img/${e.img}-1.jpg" alt="${e.n}: конец движения"></div>
-    <h1>${e.n}</h1>
+    <div class="th"><h1 class="grow">${e.n}</h1><button class="vbtn" data-a="video" data-id="${id}" aria-label="Видео: правильная техника">${ic.play}</button></div>
     <div class="sub">${e.sets} × ${rng(e)} повторений · ${e.g}</div>
     <p class="sub" style="margin-top:4px">${e.note}</p>
-    <button class="vid" data-a="video" data-id="${id}"><span class="vt"><img src="https://i.ytimg.com/vi/${e.v[0]}/mqdefault.jpg" alt="" loading="lazy"><span>${ic.play}</span></span>
-      <span class="grow"><span class="nm">Видео: правильная техника</span><span class="sub">${e.v[1]}</span></span>${ic.right}</button>
     <div class="hint">${hint}</div>
     <div class="sets">${sets}</div>
     <div class="steps">${stepper('w', e.g === 'Пресс' ? 'Доп. вес, кг' : 'Вес, кг', ui.cur.w)}${stepper('r', 'Повторы', ui.cur.r)}</div>
@@ -302,7 +334,7 @@ V.progress = () => {
     const ok = ss.some(s => s.day === k && s.date >= wk);
     return `<div class="pill ${ok ? 'ok' : ''}"><span class="pk">${ok ? ic.check : ''}</span>${d.title}</div>`;
   }).join('');
-  const cards = [...DAYS.A.ex, ...DAYS.B.ex].map(id => {
+  const cards = Object.keys(EX).map(id => {
     const e = EX[id], hist = ss.filter(s => s.ex[id]).reverse();
     if (!hist.length) return `<div class="pc"><div class="nm">${e.n}</div><div class="sub">Ещё нет данных</div></div>`;
     const sets = (hist.filter(s => s.ex[id].length >= e.sets).at(-1) || hist.at(-1)).ex[id];
@@ -316,7 +348,7 @@ V.progress = () => {
       ${l.up ? `<span class="tag">Пора добавить вес → ${fmt(wt + e.step)} кг</span>` : ''}</div>`;
   }).join('');
   const days = ss.map(s => {
-    const rows = DAYS[s.day].ex.filter(id => s.ex[id]).map(id => `<div class="dr">
+    const rows = Object.keys(s.ex).map(id => `<div class="dr">
       <div class="l"><span>${EX[id].n}</span>${delta(s.date, id, s.ex[id])}</div>
       <div class="s">${s.ex[id].map(setTxt).join(' · ')}</div></div>`).join('');
     return `<article class="day"><div class="dh"><b>${fmtDate(s.date)}</b><span class="sub">${DAYS[s.day].title}</span></div>${rows}</article>`;
@@ -328,6 +360,7 @@ V.progress = () => {
       <div class="stat"><b>${ss.length}</b><span class="sub">тренировок</span></div>
       <div class="stat"><b>${nSets}</b><span class="sub">подходов</span></div>
     </div>
+    <div class="note"><b>Как расти.</b> Возьми вес, с которым выходит 3×8. Каждую неделю добавляй по повторению. Когда все три подхода на максимуме — увеличь вес и начни заново.</div>
     <h2>Эта неделя</h2><div class="pills">${pills}</div>
     ${ss.length ? `<h2>Когда добавлять вес</h2>${cards}<h2>По дням</h2>${days}` : '<div class="empty">Пока пусто. Запиши первый подход — и он появится здесь.</div>'}`, tabsHtml('progress')];
 };
@@ -373,6 +406,7 @@ function render(keep) {
 /* ---------- действия ---------- */
 const ACT = {
   tab: d => tab(d.v),
+  cal: d => { ui.cal = new Date(ui.cal.getFullYear(), ui.cal.getMonth() + +d.d, 1); render(true); },
   back,
   day: d => go('workout', {day: d.day}),
   ex: d => openEx(d.day, d.id),
@@ -415,7 +449,7 @@ const ACT = {
   next: () => {
     const {day, id} = here(), list = DAYS[day].ex, i = list.indexOf(id);
     if (!id) return openEx(day, list[0], true);
-    i < list.length - 1 ? openEx(day, list[i + 1], true) : back();
+    i < list.length - 1 ? openEx(day, list[i + 1], true) : (nav = [{v: 'home'}, {v: 'done', day}], render());
   },
   rest: d => {
     if (!rest) return;
