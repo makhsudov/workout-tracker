@@ -5,21 +5,21 @@ const $ = s => document.querySelector(s);
 /* ---------- данные программы ---------- */
 const EX = {
   legpress: {n:'Жим ногами',            g:'Ноги',   img:'Leg_Press', v:['tjLlHGjfvTk','ТВОЙ ТРЕНЕР · 6:37'],              sets:3, r:[10,12], step:5,   note:'В тренажёре (Leg Press). Не нагружает спину, даёт отличную базу ногам.'},
-  dbpress:  {n:'Жим штанги лёжа',       g:'Грудь',  img:'Barbell_Bench_Press_-_Medium_Grip', v:['EDEYzHWbn8c','Михаил Смалько · 1:42'],   sets:3, r:[8,10],  step:2.5, note:'На горизонтальной скамье. Работают грудь и трицепс.'},
+  dbpress:  {n:'Жим гантелей лёжа',     g:'Грудь',  img:'Dumbbell_Bench_Press', v:[null,'Поиск на YouTube'],   sets:3, r:[8,10],  step:2, note:'На горизонтальной скамье. Работают грудь и трицепс.'},
   pulldown: {n:'Тяга верхнего блока',   g:'Спина',  img:'Wide-Grip_Lat_Pulldown', v:['GTs3xqB_ZgQ','Ilya Generalov · 1:16'], sets:3, r:[10,12], step:2.5, note:'К груди (Lat Pulldown). Формирует широкую спину.'},
   shoulder: {n:'Жим гантелей сидя',     g:'Плечи',  img:'Dumbbell_Shoulder_Press', v:['gVoVKUmyXVQ','Geography Fitness · 1:27'],sets:3, r:[10,10], step:2,   note:'Вверх (Shoulder Press). Качает плечи.'},
-  abs:      {n:'Скручивания',           g:'Пресс',  img:'Crunches', v:['H8xSHCAjM-I','Олександр Попенко · 0:57'],               sets:3, r:[15,20], step:1,   note:'Любые скручивания на пресс. Вес — только если добавляешь отягощение.'},
-  legcurl:  {n:'Румынская тяга со штангой', g:'Ноги', img:'Romanian_Deadlift', v:['w8618QnyZi8','Михаил Смалько · 1:28'], sets:3, r:[10,12], step:2.5, note:'Спина прямая, штанга скользит вдоль ног, таз уходит назад. Задняя поверхность бедра и ягодицы.'},
-  incline:  {n:'Жим штанги на наклонной', g:'Грудь', img:'Barbell_Incline_Bench_Press_-_Medium_Grip', v:['drTzH4ywDDw','Make Fitness · 1:03'], sets:3, r:[8,10],  step:2.5, note:'Скамья под небольшим углом (Incline Press). Верхняя часть груди.'},
+  abs:      {n:'Скручивания',           g:'Пресс',  img:'Crunches', v:['H8xSHCAjM-I','Олександр Попенко · 0:57'],               sets:3, r:[15,15], step:1,   note:'Любые скручивания на пресс. Вес — только если добавляешь отягощение.'},
+  legcurl:  {n:'Румынская тяга с гантелями', g:'Ноги', img:'Stiff-Legged_Dumbbell_Deadlift', v:[null,'Поиск на YouTube'], sets:3, r:[8,10], step:2, note:'Спина прямая, гантели скользят вдоль ног, таз уходит назад. Задняя поверхность бедра и ягодицы.'},
+  incline:  {n:'Жим гантелей на наклонной', g:'Грудь', img:'Incline_Dumbbell_Press', v:[null,'Поиск на YouTube'], sets:3, r:[8,10],  step:2, note:'Скамья под небольшим углом (Incline Press). Верхняя часть груди.'},
   row:      {n:'Тяга гантели одной рукой', g:'Спина', img:'One-Arm_Dumbbell_Row', v:['mXh-Ogf3V4Y','IRON & WATER · 1:47'], sets:3, r:[10,12], step:2, note:'В наклоне с упором на скамью. Толщина спины и осанка. Подход = обе руки по очереди с одним весом.'},
   lateral:  {n:'Махи гантелями в стороны', g:'Плечи', img:'Side_Lateral_Raise', v:['Q3j7XYxrJtk','Ilya Generalov · 0:45'],   sets:3, r:[12,15], step:1,   note:'Стоя (Lateral Raises). Делает плечи визуально шире.'},
-  biceps:   {n:'Подъём на бицепс',      g:'Бицепс', img:'Dumbbell_Bicep_Curl', v:['gi3lslo1hoI','Make Fitness · 1:20'],    sets:3, r:[10,12], step:1,   note:'Гантели или штанга.'},
-  hammer:   {n:'Молотки',               g:'Бицепс', img:'Hammer_Curls', v:['Pd4WUV-boGA','Техника и нюансы'],         sets:3, r:[10,12], step:1,   note:'Гантели нейтральным хватом (ладони смотрят друг на друга), локти прижаты. Бицепс, брахиалис и предплечье.'},
+  biceps:   {n:'Подъём на бицепс',      g:'Бицепс', img:'Dumbbell_Bicep_Curl', v:['gi3lslo1hoI','Make Fitness · 1:20'],    sets:2, r:[10,12], step:1,   note:'Гантели.'},
+  hammer:   {n:'Молотки',               g:'Бицепс', img:'Hammer_Curls', v:['Pd4WUV-boGA','Техника и нюансы'],         sets:2, r:[10,12], step:1,   note:'Гантели нейтральным хватом (ладони смотрят друг на друга), локти прижаты. Бицепс, брахиалис и предплечье.'},
   french:   {n:'Французский жим',       g:'Трицепс', img:'EZ-Bar_Skullcrusher', v:['PxSg9Iy98q0','Geography Fitness · 1:28'], sets:3, r:[10,12], step:2.5, note:'Лёжа, EZ-гриф или гантели. Локти смотрят в потолок и не разъезжаются. Работает трицепс.'},
 };
 const DAYS = {
-  A: {title:'Понедельник', ex:['legpress','dbpress','pulldown','shoulder','french','hammer','abs']},
-  B: {title:'Пятница', ex:['legcurl','incline','row','lateral','biceps','french','abs']},
+  A: {title:'Понедельник', ex:['legcurl','dbpress','pulldown','shoulder','row','french','hammer','abs']},
+  B: {title:'Пятница', ex:['legpress','incline','row','lateral','french','biceps','abs']},
 };
 const RESTS = [120,150,180];
 
@@ -412,7 +412,8 @@ const ACT = {
   day: d => go('workout', {day: d.day}),
   ex: d => openEx(d.day, d.id),
   video: d => {
-    const url = 'https://www.youtube.com/watch?v=' + EX[d.id].v[0];
+    const e = EX[d.id];
+    const url = e.v[0] ? 'https://www.youtube.com/watch?v=' + e.v[0] : 'https://www.youtube.com/results?search_query=' + encodeURIComponent(e.n + ' техника');
     tg?.openLink ? tg.openLink(url) : window.open(url, '_blank', 'noopener');
   },
   warm: d => go('warmup', {day: d.day}),
